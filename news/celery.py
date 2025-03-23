@@ -10,7 +10,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'test': {
         'task': 'newsapp.tasks.get_news',
-        'schedule': crontab(minute=15,hour=18),
+        'schedule': crontab(minute=2,hour=22),
     },
     'delete': {
          'task': 'newsapp.tasks.clean_db',

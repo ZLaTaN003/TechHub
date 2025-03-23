@@ -1,0 +1,104 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+news/__pycache__
+
+# Virtual environment
+venv/
+env/
+*.env
+*.venv
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+*.sqlite3
+*.db
+db.sqlite3
+
+# Celery Beat and Celery logs
+news/celerybeat-schedule
+news/celerybeat.pid
+
+
+# Django secret key
+.env
+*.envrc
+
+# Static and media files
+/static/
+/media/
+
+# Local settings
+local_settings.py
+settings_local.py
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Python environment files
+*.env
+*.venv
+*.egg
+*.egg-info/
+dist/
+build/
+*.bak
+*.swp
+
+# Test coverage
+htmlcov/
+.coverage
+.tox/
+.nox/
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# Migrations
+**/migrations/__pycache__/
+**/migrations/*.pyc
+**/migrations/*.pyo
+**/migrations/*.pyd
+**/migrations/*.log
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# Logs and debug
+logs/
+*.log
+*.out
+*.err
+*.pid
+*.seed
+*.bak
+*.orig
+*.swp
+*.swo
+*.swn
+
+# IDE config
+*.iml
+*.idea/
+*.vscode/
+*.sublime-project
+*.sublime-workspace
+
+
+#Dummy
+justfun.py

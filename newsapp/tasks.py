@@ -27,7 +27,6 @@ def get_news():
         image_url, pub, short, content = get_des_and_content(article_url)
         if not content:
             continue
-        image = image_url[:77]
         published = datetime.fromisoformat(pub).astimezone(tz=ist)
 
         if Article.objects.filter(title=title).exists():
@@ -39,7 +38,7 @@ def get_news():
             title=title,
             short_description=short,
             content=content,
-            image_url=image,
+            image_url=image_url,
             post_published=published,
             source_link=article_url,
             author=author.text if author else None,
@@ -55,7 +54,7 @@ def get_des_and_content(url):
     paras, image_url, pub_date, short_des, content = None, None, None, None, None
 
     try:
-        image_url = soup.find(class_="wp-post-image").attrs["srcset"]
+        image_url = soup.find(class_="wp-post-image").attrs["src"]
         pub_date = soup.find(class_="wp-block-post-date").find("time").attrs["datetime"]
 
         paras = soup.find_all(class_="wp-block-paragraph")
