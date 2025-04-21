@@ -9,14 +9,18 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     'test': {
-        'task': 'newsapp.tasks.get_news',
-        'schedule': crontab(minute=2,hour=22),
+        'task': 'newsapp.tasks.news_data',
+        'schedule': crontab(minute=51,hour=14),
     },
-    'delete': {
-         'task': 'newsapp.tasks.clean_db',
-         'schedule': crontab(0,0,day_of_month=1,month_of_year=4)
+    # 'delete': {
+    #      'task': 'newsapp.tasks.clean_db',
+    #      'schedule': crontab(0,0,day_of_month=1,month_of_year=4)
+    # },
+    'product': {
+         'task': 'newsapp.tasks.products_data',
+         'schedule': crontab(minute=40,hour=21)
     }
 
 }
 
-app.conf.timezone = 'Asia/Calcutta'
+app.conf.timezone = 'Asia/Kolkata'

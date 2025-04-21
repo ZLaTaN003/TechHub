@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block csspart %}
+  <link rel="stylesheet" href="{% static 'newsdetails.css' %}" />
+{% endblock %}
+{% block content %}
+  <div class="details">
+    <div class="related-news">idk</div>
+    <section class="detail-article">
+      <h1>{{ product.name }}</h1>
+
+      <div class="short-des">{{ product.description }}</div>
+
+      <div class="article-date">
+        <span>
+          at {{ product.featuredat }}
+          <i class="fa-solid fa-circle-up"></i> {{ product.upvotes }} Upvotes
+        </span>
+
+        <a href="{{ product.link }}" class="product-link" style=""><img src="{{ product.thumbnail }}" alt="article_url" width="40" height="40" style="border-radius: 50%; vertical-align: middle; margin-left: 5px;" /></a>
+      </div>
+
+      <div class="share-box">
+        <i class="fa-solid fa-share"></i>Share<div class="share-list">
+          <div class="links-share-items">
+            <a href="" class="share-it share-wa"><i class="fa-brands fa-whatsapp"></i>WhatsApp</a>
+            <div class="fb-share-button share-it" data-href="" data-layout="" data-size="">
+              <a id="fa" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2F127.0.0.1%3A8000%2Fnews%2Fwhy-susan-monarez-is&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore share-it"><i class="fa-brands fa-facebook"></i>Facebook</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="image-container">
+        <img src="{{ product.media }}?resize=900,602" alt="article_url" width="200" height="200" />
+      </div>
+      <h1>What problem does {{ product.name }} Solve ?</h1>
+      <div class="article-content">{{ product.summary }}</div>
+
+      <div class="comments">
+        <h1>Comments section</h1>
+      </div>
+    </section>
+  </div>
+
+  <script type="text/javascript" src="{% static 'trendingdetail.js' %}"></script>
+{% endblock %}

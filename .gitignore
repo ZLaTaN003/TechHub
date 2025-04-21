@@ -2,9 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-news/__pycache__
 
 # Virtual environment
+myenv/
 venv/
 env/
 *.env
@@ -28,7 +28,6 @@ news/celerybeat.pid
 *.envrc
 
 # Static and media files
-/static/
 /media/
 
 # Local settings
@@ -102,3 +101,4 @@ logs/
 
 #Dummy
 justfun.py
+tc_tasks.py

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block csspart %}
+  <style>
+    .nav {
+      display: none;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  <section class="login-body">
+    <div class="login-content">
+      <form action="" method="POST">
+        <a class="logo-news" href="{% url 'allnews' %}">
+          <i class="fa-solid fa-layer-group"></i>
+          Newsy
+        </a>
+        {% csrf_token %}
+        {% for field in login_form %}
+          <div class="fieldWrapper">{{ field }}</div>
+          {% if field.errors %}
+            <span class="login-err">{{ field.errors }}</span>
+          {% endif %}
+        {% endfor %}
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

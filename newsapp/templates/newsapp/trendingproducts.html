@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block csspart %}
+  <link rel="stylesheet" href="{% static 'latestnews.css' %}" />
+{% endblock %}
+{% block content %}
+  <div class="listbody">
+    <div class="trending">
+      <h3>Top 5 News of Today</h3>
+
+      <a href="{% url 'register' %}">HEY</a>
+    </div>
+
+    <section class="latest-articles">
+      <h1 class="latest-news-title">Trending Apps</h1>
+      <hr />
+      {% for article in object %}
+        <a href="{% url 'trending' article.name %}" class="article-link">
+          <div class="article">
+            <div class="image-container">
+              <img src="{{ article.media }}?resize=900,602" alt="article_url" width="200" height="200" />
+            </div>
+
+            <div class="information">
+              <h2>{{ article.name }}</h2>
+
+              <div class="article-date">at {{ article.featuredat }}</div>
+
+              <div class="shortdes">{{ article.short|truncatechars:200 }}</div>
+
+              <div class="tag">{{ article.domain|upper }}</div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+
+      <div class="page-nums">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="page-prev pprev"><div class="prev-container">Previous</div></a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="page-next pnext">Next</a>
+        {% endif %}
+      </div>
+    </section>
+
+    <div class="filters"></div>
+  </div>
+{% endblock %}

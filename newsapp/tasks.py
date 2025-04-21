@@ -1,86 +1,204 @@
-import bs4
-from celery import shared_task
+import os
 import requests
-from datetime import datetime, timezone, timedelta
+from datetime import datetime,timedelta,date
+import json
+import time
+from celery import shared_task
 
 
 @shared_task()
-def get_news():
+def news_data():
     from .models import Article, Domain
 
-    url = "https://techcrunch.com/latest/"
-    page = requests.get(url).text
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    ist = timezone(timedelta(hours=5, minutes=30))
+    newskey = os.getenv("newskey","")
+    params = {
+        "apiKey": newskey,
+        "from": date.today() - timedelta(days=1),
+        "to":  date.today() - timedelta(days=1),
+        "q": "technology",
+        "language": "en",
+        "pageSize": 25,
+        "page": 1,
+        "sortBy": "relavancy",
+    }
+    response = requests.get("https://newsapi.org/v2/everything", params=params)
 
-    links_tag = soup.find_all(class_="loop-card__title-link")
+    articles = response.json()["articles"]
 
-    for link in links_tag:
-        class_list = link.find_parent("li")["class"]
-        if "tag-in-brief" in class_list:
+    for article in articles:
+        author = article["author"]
+        title = article["title"]
+        short_description = article["description"]
+        source_link = article["url"]
+        image_url = article["urlToImage"]
+        published = datetime.fromisoformat(article["publishedAt"])
+
+
+        if Article.objects.filter(title=title).exists():  # Prevent duplicate articles
             continue
+        
 
-        author = soup.find(class_="wp-block-tc23-author-card-name__link")
+        time.sleep(10)
+        prompt = "Provide a detailed summary for the following Article Link,Give the Summary directly in paragraph don't format the text as bold or anything."
+        summary = generate_summary(source_link,prompt=prompt)
 
-        title = link.text
-        article_url = link.attrs["href"]
-        image_url, pub, short, content = get_des_and_content(article_url)
-        if not content:
-            continue
-        published = datetime.fromisoformat(pub).astimezone(tz=ist)
-
-        if Article.objects.filter(title=title).exists():
-            continue
-
-        print(title, short, content, image_url, published, article_url)
 
         article = Article(
             title=title,
-            short_description=short,
-            content=content,
+            short_description=short_description,
             image_url=image_url,
             post_published=published,
-            source_link=article_url,
-            author=author.text if author else None,
+            source_link=source_link,
+            author=author,
+            summary=summary,
         )
+        print("its made")
+        get_domain(title,Domain,article)
 
-        get_category_tags(class_list, article, Domain)
         article.save()
 
+    
 
-def get_des_and_content(url):
-    page = requests.get(url).text
-    soup = bs4.BeautifulSoup(page, "html.parser")
-    paras, image_url, pub_date, short_des, content = None, None, None, None, None
+    
 
-    try:
-        image_url = soup.find(class_="wp-post-image").attrs["src"]
-        pub_date = soup.find(class_="wp-block-post-date").find("time").attrs["datetime"]
+def generate_summary(target,prompt):
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    api_key = os.getenv("gem_api_key","")
+    params = {"key": api_key}
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": prompt
+                    },
+                    {"text": target},
+                ]
+            }
+        ]
+    }
+    response = requests.post(
+        url, params=params, headers=headers, data=json.dumps(data)
+    )
+    summary = response.json()["candidates"][0]["content"]["parts"][0]["text"]
+    return summary
 
-        paras = soup.find_all(class_="wp-block-paragraph")
 
-        short_des = paras[0].text
-    except Exception as e:
-        print("Different Pattern", e)
+def get_domain(target_title,Domain,article):
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    api_key = os.getenv("gem_api_key","")
+    params = {"key": api_key}
+    headers = {"Content-Type": "application/json"}
+    data = {
+        "contents": [
+            {
+                "parts": [
+                    {
+                        "text": "Provide one word for the category of the following title, about which domain does the title belong only one category word should be given."
+                    },
+                    {"text": target_title},
+                ]
+            }
+        ]
+    }
+    response = requests.post(
+        url, params=params, headers=headers, data=json.dumps(data)
+    )
+    domain = response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
-    if paras:
-        content = ""
-        for para in paras[1:]:
-            content += para.text
-    return image_url, pub_date, short_des, content
-
-
-def get_category_tags(class_list, article, Tag):
-
-    for cls in class_list:
-        if cls.startswith("category"):
-            category = cls.replace("category-", "")
-            tag, created = Tag.objects.get_or_create(category=category)
-            article.domain = tag
+    tag,created = Domain.objects.get_or_create(category=domain)
+    article.domain = tag
 
 
 @shared_task()
-def clean_db():
-    from .models import Article
+def products_data():
+    from .models import Product
+  
+    try:
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Host": "api.producthunt.com",
+            "Authorization": os.getenv("producthunt_key",""),
+            "User-Agent": "curl/8.11.1",
+        }
 
-    articles_to_delete = Article.objects.all().delete()
+        url = "https://api.producthunt.com/v2/api/graphql"
+        today = datetime.today().date()
+
+        query = f"""
+    query Posts {{
+        posts(order: VOTES, first: 20, postedAfter: "{today}") {{
+            nodes {{
+                id
+                name
+                description
+                media {{
+                    type
+                    url
+                }}
+                thumbnail {{
+                    type
+                    url
+                }}
+                tagline
+                featuredAt
+                createdAt
+                votesCount
+                topics {{
+                    totalCount
+                    nodes {{
+                        name
+                    }}
+                }}
+                productLinks {{
+                    type
+                    url
+                }}
+            }}
+        }}
+    }}
+    """
+
+
+        response = requests.post(url,headers=headers,json={"query":query})
+
+        print(response.status_code,"got the products")
+        posts = response.json()["data"]["posts"]["nodes"]
+
+        for post in posts:
+            name = post["name"]
+            des = post["description"]
+            tagline = post["tagline"]
+            featuredat = datetime.fromisoformat(post["featuredAt"])
+            media = post["media"][0]["url"]
+            thumbnail = post["thumbnail"]["url"]
+            votes = post["votesCount"]
+            topic = post["topics"]["nodes"][0]["name"]
+            link = post["productLinks"][0]["url"]
+
+
+
+
+            prompt = "You are an expert at giving Summaries of the problems that Software products are trying to Solve. Give the Detailed Summary for the following product in about 700 characters in a elaborate and easy manner. Just respond in plain text without any formatting"
+
+            time.sleep(10)
+            summary = generate_summary(prompt=prompt,target=des)
+
+            product = Product(name=name,short=tagline,description=des,media=media,thumbnail=thumbnail,featuredat=featuredat,summary=summary,link=link,domain=topic,upvotes=votes)
+
+            product.save()
+
+            print("product made")
+    except Exception as e:
+        print("An error occured",e)
+        pass # different pattern
+
+
+
+
+
+
+
+    
