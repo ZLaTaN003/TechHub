@@ -16,7 +16,7 @@
       <h1 class="latest-news-title">Trending Apps</h1>
       <hr />
       {% for article in object %}
-        <a href="{% url 'trending' article.name %}" class="article-link">
+        <a href="{% url 'trending_products' article.slug %}" class="article-link">
           <div class="article">
             <div class="image-container">
               <img src="{{ article.media }}?resize=900,602" alt="article_url" width="200" height="200" />

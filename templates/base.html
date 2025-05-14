@@ -16,7 +16,7 @@
       <nav class="nav">
         <ul>
           <li>
-            <a href="{% url 'allnews' %}">
+            <a href="{% url 'home' %}">
               <i class="fa-solid fa-layer-group"></i>
               Newsy
             </a>
@@ -26,7 +26,7 @@
           </li>
 
           <li>
-            <a href="{% url 'trending' %}">Trending Products</a>
+            <a href="{% url 'trending_list' %}">Trending Products</a>
           </li>
           <li>
             {% if request.user.is_authenticated %}

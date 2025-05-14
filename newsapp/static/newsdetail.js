@@ -22,31 +22,32 @@ let fb = document.querySelector("#fa");
 const newHref = `https://www.facebook.com/sharer/sharer.php?u=${link}&src=sdkpreparse`;
 fb.setAttribute("href", newHref);
 
-// Like No Reloads
+let pagetype = document.querySelector(".details").dataset.page;
+const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+let news_id; // just to make it in global scope
 
+// Like No Reloads
 function setLike() {
   let like = document.querySelector(".like-section");
-  let news_id = like.getAttribute("data-news");
-  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-  console.log(csrftoken);
+  news_id = like.getAttribute("data-news");
 
-  let likestatus = like.getAttribute("data-liked");
-  console.log("trying", likestatus);
+  let likestatus = like.getAttribute("data-liked"); // get the current status
+  console.log("trying", likestatus, pagetype);
 
   like.addEventListener("click", () => {
-    likestatus = (likestatus == "1") ? "0" : "1";
-    fetch(`/news/like/${news_id}/`, {
+    likestatus = likestatus == "1" ? "0" : "1";
+    fetch(`/${pagetype}/like/${news_id}/`, {
       //requests the server for a likestatus update
-      method: "POST",
-      body: JSON.stringify({ status: likestatus }), // send the current like status
+
       headers: {
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
+      method: "POST",
+      body: JSON.stringify({ status: likestatus }), // updated like status
     })
       .then((response) => {
         if (response.status == "403") {
-          console.log("Sad");
           window.location.href = "/news/login/";
         }
 
@@ -55,10 +56,10 @@ function setLike() {
       .then((data) => {
         console.log("Updated", data); //response from server
         if (data["liked"]) {
-          like.setAttribute("data-liked","1")
+          like.setAttribute("data-liked", "1");
           console.log(like);
         } else {
-          like.setAttribute("data-liked","0")
+          like.setAttribute("data-liked", "0");
           console.log(like);
         }
       })
@@ -68,4 +69,32 @@ function setLike() {
   });
 }
 
+// Comments
+function setComment() {
+  commentinput = document.querySelector(".commentform");
+  commentbutton = document.querySelector(".commentsubmit");
+
+  commentbutton.addEventListener("submit", () => {
+    let comment = commentinput.innerText;
+    fetch(`/${pagetype}/comment/${news_id}/`, {
+      headers: {
+        "X-CSRFToken": csrftoken,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ comment: comment }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+
+      .then((data) => {
+        console.log("got data", data);
+      })
+
+      .catch((err) => {
+        console.log("error occured");
+      });
+  });
+}
 setLike();

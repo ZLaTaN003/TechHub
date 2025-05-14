@@ -2,17 +2,15 @@ from django.shortcuts import render
 from .models import Article
 from django.core.paginator import Paginator, InvalidPage
 from django.shortcuts import get_object_or_404
-from .forms import SignUp, Login
-from .models import NewsUser,Product
+from .forms import SignUp, Login,ProductCommentForm
+from .models import NewsUser, Product
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 
-
-from django.http import JsonResponse,HttpResponseForbidden,HttpResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 import json
 
 
@@ -33,10 +31,12 @@ def latest_news(request):
     return render(request, "newsapp/latestnews.html", context=ctx)
 
 
-def detailed_page(request, title_slug):
-    article = get_object_or_404(Article, slug=title_slug)
-    user_liked = "1" if article.likes.filter(username=request.user.username).exists() else "0"
-    ctx = {"article": article,"user_liked": user_liked}
+def detailed_page(request, news_slug):
+    article = get_object_or_404(Article, slug=news_slug)
+    user_liked = (
+        "1" if article.likes.filter(username=request.user.username).exists() else "0"
+    )
+    ctx = {"article": article, "user_liked": user_liked}
     return render(request, "newsapp/newsdetail.html", context=ctx)
 
 
@@ -105,16 +105,15 @@ def login_view(request):
     return render(request, "newsapp/login.html", context=ctx)
 
 
-def like(request, title_slug):
+def like_news(request, news_slug):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
 
-
     if request.method == "POST":
         data = json.loads(request.body)
-        article = get_object_or_404(Article, slug=title_slug)
+        article = get_object_or_404(Article, slug=news_slug)
         status = data["status"]
-      
+
         exist = article.likes.filter(username=request.user.username).exists()
 
         if status == "1":
@@ -134,10 +133,10 @@ def like(request, title_slug):
         return JsonResponse({"error": "Invalid Method"})
 
 
-
 def logout_view(request):
     logout(request)
     return redirect("allnews")
+
 
 class TrendingProducts(ListView):
     model = Product
@@ -145,15 +144,52 @@ class TrendingProducts(ListView):
     template_name = "newsapp/trendingproducts.html"
     context_object_name = "object"
 
-
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset.order_by("-featuredat")
         return queryset
-    
-def trending_detail(request,name):
-    product = get_object_or_404(Product, name=name)
-    ctx = {"product": product}
+
+
+def trending_detail(request, product_name):
+    product = get_object_or_404(Product, slug=product_name)
+    user_liked = (
+        "1" if product.likes.filter(username=request.user.username).exists() else "0"
+    )
+    form = ProductCommentForm()
+    ctx = {"product": product, "user_liked": user_liked,"comment_form":form}
     return render(request, "newsapp/trendingdetails.html", context=ctx)
 
 
+def home(request):
+    return render(request, "newsapp/home.html")
+
+
+def like_product(request, product_slug):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        article = get_object_or_404(Product, slug=product_slug)
+        status = data["status"]
+
+        exist = article.likes.filter(username=request.user.username).exists()
+
+        if status == "1":
+            if not exist:
+                print("Liking it")
+                article.likes.add(request.user)
+                return JsonResponse({"liked": True, "likecount": article.no_of_likes()})
+
+        else:
+            if exist:
+                print("Unliking")
+                article.likes.remove(request.user)
+                return JsonResponse(
+                    {"liked": False, "likecount": article.no_of_likes()}
+                )
+    else:
+        return JsonResponse({"error": "Invalid Method"})
+
+def product_comment(request,product_slug):
+    print("HEY")

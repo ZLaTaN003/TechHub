@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="{% static 'newsdetails.css' %}" />
 {% endblock %}
 {% block content %}
-  <div class="details">
+  <div class="details" data-page="trending">
     <div class="related-news">idk</div>
     <section class="detail-article">
       <h1>{{ product.name }}</h1>
@@ -37,11 +37,18 @@
       <h1>What problem does {{ product.name }} Solve ?</h1>
       <div class="article-content">{{ product.summary }}</div>
 
+      {% csrf_token %}
+
+      <div class="like-section" style="color: white; font-size: 50px;" data-news="{{ product.slug }}" data-liked="{{ user_liked }}">THIS</div>
+
       <div class="comments">
         <h1>Comments section</h1>
+        {{ comment_form }}
+        <button type="submit" class="commmentsubmit">Comment</button>
       </div>
     </section>
   </div>
 
-  <script type="text/javascript" src="{% static 'trendingdetail.js' %}"></script>
+  <script src="{% static 'newsdetail.js' %}"></script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v22.0"></script>
 {% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block csspart %}
+  <link rel="stylesheet" href="{% static 'home.css' %}" />
+{% endblock %}
+{% block content %}
+  <section class="home-container">
+    <div class="featured-news"></div>
+    <div class="featured-product"></div>
+
+    <div class="featured-trending-news"></div>
+  </section>
+{% endblock %}

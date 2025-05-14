@@ -121,7 +121,7 @@ def products_data():
             "Content-Type": "application/json",
             "Host": "api.producthunt.com",
             "Authorization": os.getenv("producthunt_key",""),
-            "User-Agent": "curl/8.11.1",
+            "User-Agent": "curl/8.11.1", #normal useragent was not working for some reason
         }
 
         url = "https://api.producthunt.com/v2/api/graphql"
