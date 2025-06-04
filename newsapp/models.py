@@ -21,12 +21,12 @@ class Domain(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=2000, unique=True)
     short_description = models.CharField(max_length=4000)
-    image_url = models.CharField(max_length=400)
+    image_url = models.CharField(max_length=400,default="https://images.unsplash.com/photo-1624269305543-efbc8d89f1d3?q=80&w=3125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
     published_at = models.DateTimeField(auto_now_add=True)
     source_link = models.CharField(max_length=400)
     author = models.CharField(max_length=100, null=True)
     post_published = models.DateField()
-    summary = models.TextField(default="No summary Yet")
+    summary = models.TextField(default="No Summary Yet")
     domain = models.ForeignKey(
         Domain, on_delete=models.CASCADE, related_name="articles"
     )
@@ -50,8 +50,8 @@ class Product(models.Model):
     name = models.CharField(max_length=400, unique=True)
     short = models.CharField(max_length=400)
     description = models.CharField(max_length=3000)
-    thumbnail = models.CharField(max_length=400)
-    media = models.CharField(max_length=400)
+    thumbnail = models.CharField(max_length=400,default="https://images.unsplash.com/photo-1597484661973-ee6cd0b6482c?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
+    media = models.CharField(max_length=400,default="https://images.unsplash.com/photo-1556888335-23631cd2801a?q=80&w=2906&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")
     summary = models.TextField()
     featuredat = models.DateField()
     upvotes = models.IntegerField()
@@ -59,11 +59,14 @@ class Product(models.Model):
     domain = models.CharField(max_length=400)
     slug = models.SlugField(max_length=500)
     likes = models.ManyToManyField(NewsUser, blank=True)
+    domain_slug = models.SlugField(max_length=100, blank=True)
 
     def save(self, *args, **kwargs):
         title_items = self.name.split()[:4]
         title_string = " ".join(title_items)
+        self.domain_slug = slugify(self.domain)
         self.slug = slugify(title_string)
+
         return super().save(*args, **kwargs)
 
     def __str__(self):

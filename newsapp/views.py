@@ -2,19 +2,56 @@ from django.shortcuts import render
 from .models import Article
 from django.core.paginator import Paginator, InvalidPage
 from django.shortcuts import get_object_or_404
-from .forms import SignUp, Login,ProductCommentForm
+from .forms import (
+    SignUp,
+    Login,
+    ProductCommentForm,
+    ArticleCommentForm,
+    ArticleComment,
+    ProductComment,
+)
 from .models import NewsUser, Product
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
-
+from django.db.models import Count, Max
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 import json
+from django.utils import timezone
+from datetime import timedelta
 
 
-# Create your views here.
+def home(request):
+    past_week_date = timezone.now() - timedelta(days=7)
+    past_month_date = timezone.now() - timedelta(days=30)
+    hyped_articles = (
+        Article.objects.filter(post_published__gte=past_week_date)
+        .annotate(num_likes=Count("likes"))
+        .order_by("-num_likes").order_by("-post_published", "-published_at")[:10]
+    )
+    latest_news_articles = Article.objects.all().order_by(
+        "-post_published", "-published_at"
+    )[:10]
+    hyped_products = Product.objects.filter(featuredat__gt=past_month_date).order_by(
+        "-upvotes"
+    )[:10]
+
+    categories_product = Product.objects.values_list(
+        "domain", flat=True
+    ).distinct()  # category to base
+
+    return render(
+        request,
+        "newsapp/home.html",
+        context={
+            "hyped_articles": hyped_articles,
+            "latest_news": latest_news_articles,
+            "hyped_products": hyped_products,
+            "categories": categories_product,
+        },
+    )
 
 
 def latest_news(request):
@@ -33,10 +70,22 @@ def latest_news(request):
 
 def detailed_page(request, news_slug):
     article = get_object_or_404(Article, slug=news_slug)
+    form = ArticleCommentForm()
+    article_comments = ArticleComment.objects.filter(article=article).order_by(
+        "-created_at"
+    )
     user_liked = (
         "1" if article.likes.filter(username=request.user.username).exists() else "0"
     )
-    ctx = {"article": article, "user_liked": user_liked}
+    no_of_likes = article.no_of_likes()
+
+    ctx = {
+        "article": article,
+        "user_liked": user_liked,
+        "comment_form": form,
+        "comments": article_comments,
+        "no_of_likes": no_of_likes,
+    }
     return render(request, "newsapp/newsdetail.html", context=ctx)
 
 
@@ -81,7 +130,6 @@ def login_view(request):
 
     if request.method == "POST":
         form = Login(request.POST)
-        print("yo yo yo")
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
@@ -105,6 +153,100 @@ def login_view(request):
     return render(request, "newsapp/login.html", context=ctx)
 
 
+def logout_view(request):
+    logout(request)
+    return redirect("allnews")
+
+
+class CategoryProduct(ListView):
+    paginate_by = 5
+    template_name = "newsapp/trendingproducts.html"
+    context_object_name = "object"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Product.objects.values_list(
+            "domain", flat=True
+        ).distinct()  # category to base
+        context["type"] = "category"
+        context["category"] = self.category
+        return context
+
+    def get_queryset(self):
+        category_slug = self.kwargs.get("category_slug")
+        queryset = Product.objects.filter(domain_slug=category_slug)
+        self.category = queryset[0].domain
+        return queryset
+
+
+class TrendingProducts(ListView):
+    model = Product
+    paginate_by = 5
+    template_name = "newsapp/trendingproducts.html"
+    context_object_name = "object"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Product.objects.values_list(
+            "domain", flat=True
+        ).distinct()  # category to base
+        context["type"] = "productlist"
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.order_by("-featuredat")
+        return queryset
+
+
+def search_product(request):
+    query = request.GET.get("searchTerm")
+    products = Product.objects.filter(name__contains=query).order_by("featuredat")
+    categories = Product.objects.values_list(
+        "domain", flat=True
+    ).distinct()  # category to base
+    paginator = Paginator(products, 5)
+
+    try:
+        current_p = paginator.page(request.GET.get("page", 1))
+    except InvalidPage:
+        current_p = paginator.get_page(1)
+    return render(
+        request,
+        "newsapp/trendingproducts.html",
+        context={
+            "page_obj": current_p,
+            "categories": categories,
+            "type": "search",
+            "query": query,
+            "object": current_p,
+        },
+    )
+
+
+def trending_detail(request, product_name):
+    product = get_object_or_404(Product, slug=product_name)
+    user_liked = (
+        "1" if product.likes.filter(username=request.user.username).exists() else "0"
+    )
+    form = ProductCommentForm()
+    product_comments = ProductComment.objects.filter(product=product).order_by(
+        "-created_at"
+    )
+    no_of_likes = product.no_of_likes()
+
+    categories_product = Product.objects.values_list("domain", flat=True).distinct()
+    ctx = {
+        "product": product,
+        "user_liked": user_liked,
+        "comment_form": form,
+        "comments": product_comments,
+        "no_of_likes": no_of_likes,
+        "categories": categories_product,
+    }
+    return render(request, "newsapp/trendingdetails.html", context=ctx)
+
+
 def like_news(request, news_slug):
     if not request.user.is_authenticated:
         return HttpResponseForbidden()
@@ -116,52 +258,34 @@ def like_news(request, news_slug):
 
         exist = article.likes.filter(username=request.user.username).exists()
 
-        if status == "1":
+        if status == "like":
             if not exist:
-                print("Liking it")
                 article.likes.add(request.user)
                 return JsonResponse({"liked": True, "likecount": article.no_of_likes()})
-
-        else:
+            else:
+                return JsonResponse(
+                    {
+                        "liked": True,
+                        "likecount": article.no_of_likes(),
+                        "message": "already_liked",
+                    }
+                )
+        if status == "unlike":
             if exist:
-                print("Unliking")
                 article.likes.remove(request.user)
                 return JsonResponse(
                     {"liked": False, "likecount": article.no_of_likes()}
                 )
+            else:
+                return JsonResponse(
+                    {
+                        "liked": True,
+                        "likecount": article.no_of_likes(),
+                        "message": "already_unliked",
+                    }
+                )
     else:
         return JsonResponse({"error": "Invalid Method"})
-
-
-def logout_view(request):
-    logout(request)
-    return redirect("allnews")
-
-
-class TrendingProducts(ListView):
-    model = Product
-    paginate_by = 5
-    template_name = "newsapp/trendingproducts.html"
-    context_object_name = "object"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset.order_by("-featuredat")
-        return queryset
-
-
-def trending_detail(request, product_name):
-    product = get_object_or_404(Product, slug=product_name)
-    user_liked = (
-        "1" if product.likes.filter(username=request.user.username).exists() else "0"
-    )
-    form = ProductCommentForm()
-    ctx = {"product": product, "user_liked": user_liked,"comment_form":form}
-    return render(request, "newsapp/trendingdetails.html", context=ctx)
-
-
-def home(request):
-    return render(request, "newsapp/home.html")
 
 
 def like_product(request, product_slug):
@@ -175,21 +299,105 @@ def like_product(request, product_slug):
 
         exist = article.likes.filter(username=request.user.username).exists()
 
-        if status == "1":
+        if status == "like":
             if not exist:
-                print("Liking it")
                 article.likes.add(request.user)
                 return JsonResponse({"liked": True, "likecount": article.no_of_likes()})
-
-        else:
+            else:
+                return JsonResponse(
+                    {
+                        "liked": True,
+                        "likecount": article.no_of_likes(),
+                        "message": "already_liked",
+                    }
+                )
+        if status == "unlike":
             if exist:
-                print("Unliking")
                 article.likes.remove(request.user)
                 return JsonResponse(
                     {"liked": False, "likecount": article.no_of_likes()}
                 )
+            else:
+                return JsonResponse(
+                    {
+                        "liked": True,
+                        "likecount": article.no_of_likes(),
+                        "message": "already_unliked",
+                    }
+                )
     else:
         return JsonResponse({"error": "Invalid Method"})
 
-def product_comment(request,product_slug):
-    print("HEY")
+
+def product_comment(request, product_slug):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+        form = ProductCommentForm({"comment": data["comment"]})
+        product_comment = form.save(commit=False)
+        product_comment.user = request.user
+        product_comment.product = Product.objects.get(slug=product_slug)
+        product_comment.save()
+
+        return JsonResponse(
+            {
+                "author": request.user.username,
+                "commentmessage": product_comment.comment,
+                "date": product_comment.created_at,
+            }
+        )
+
+
+def news_comment(request, news_slug):
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden
+    if request.method == "POST":
+        data = json.loads(request.body)
+        form = ArticleCommentForm({"comment": data["comment"]})
+        article_comment = form.save(commit=False)
+        article_comment = form.save(commit=False)
+        article_comment.user = request.user
+        article_comment.article = Article.objects.get(slug=news_slug)
+        article_comment.save()
+
+        return JsonResponse(
+            {
+                "author": request.user.username,
+                "commentmessage": article_comment.comment,
+                "date": article_comment.created_at,
+            }
+        )
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def bookmarked(request):
+    if not request.user.is_authenticated:
+        redirect("login")
+    username = request.user.username
+    products_liked_by_user = NewsUser.objects.get(username=username).product_set.all()
+    categories = Product.objects.values_list(
+        "domain", flat=True
+    ).distinct()  # category to base
+    print(products_liked_by_user)
+    paginator = Paginator(products_liked_by_user, 5)
+
+    try:
+        current_p = paginator.page(request.GET.get("page", 1))
+    except InvalidPage:
+        current_p = paginator.get_page(1)
+
+    return render(
+    request,
+    "newsapp/trendingproducts.html",
+    context={
+        "page_obj": current_p,
+        "categories": categories,
+        "type": "bookmark",
+        "object": current_p,
+    },
+)
+
+

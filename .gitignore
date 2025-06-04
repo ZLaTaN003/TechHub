@@ -69,11 +69,8 @@ htmlcov/
 .pytest_cache/
 
 # Migrations
-**/migrations/__pycache__/
-**/migrations/*.pyc
-**/migrations/*.pyo
-**/migrations/*.pyd
-**/migrations/*.log
+
+**/migrations/
 
 # Jupyter notebooks
 .ipynb_checkpoints
@@ -102,4 +99,3 @@ logs/
 #Dummy
 justfun.py
 tc_tasks.py
-fun.js

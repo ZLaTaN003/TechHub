@@ -141,17 +141,14 @@
     border: none;
 }
 
-.like-section[data-liked="1"]::after{
-    content: "LIKED";
-
+.like-hide{
+    display: none;
+}
+.like-show{
+    display: block;
 }
 
-.like-section[data-liked="0"]::after{
-    content: "UNLIKED";
-
-}
-
-
-.commentform{
-    background-color: red;
+.detail-like-container{
+    display: flex;
+    justify-content: space-between;
 }

@@ -24,27 +24,41 @@ fb.setAttribute("href", newHref);
 
 let pagetype = document.querySelector(".details").dataset.page;
 const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-let news_id; // just to make it in global scope
+let news_id; // global scope
 
+
+let userLiked = document.querySelector(".user-liked").dataset.userliked;
+
+let like = document.querySelector(".like-button");
+let unlike = document.querySelector(".unset-button");
+if (userLiked == "1"){
+  like.style.display = "none";
+
+}
+if (userLiked == "0"){
+  unlike.style.display = "none";
+}
+console.log(userLiked);
 // Like No Reloads
-function setLike() {
-  let like = document.querySelector(".like-section");
+function Like() {
   news_id = like.getAttribute("data-news");
 
-  let likestatus = like.getAttribute("data-liked"); // get the current status
-  console.log("trying", likestatus, pagetype);
+  checkEvent(like, "like");
+  checkEvent(unlike, "unlike");
+}
 
-  like.addEventListener("click", () => {
-    likestatus = likestatus == "1" ? "0" : "1";
+function checkEvent(button, mode) {
+  button.addEventListener("click", () => {
+    console.log(button, mode);
     fetch(`/${pagetype}/like/${news_id}/`, {
-      //requests the server for a likestatus update
+      //requests the server
 
       headers: {
         "X-CSRFToken": csrftoken,
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ status: likestatus }), // updated like status
+      body: JSON.stringify({ status: mode }), // updated like status pressed like or unlike button
     })
       .then((response) => {
         if (response.status == "403") {
@@ -54,14 +68,18 @@ function setLike() {
         return response.json();
       })
       .then((data) => {
-        console.log("Updated", data); //response from server
-        if (data["liked"]) {
-          like.setAttribute("data-liked", "1");
-          console.log(like);
-        } else {
-          like.setAttribute("data-liked", "0");
-          console.log(like);
+        if (mode == "like") {
+            unlike.style.display = "block";   
+            like.style.display = "none";       
         }
+        if (mode == "unlike"){
+            like.style.display = "block";
+            unlike.style.display = "none";       
+
+
+
+        }
+        document.querySelector(".like-count").textContent = data.likecount + " likes"
       })
       .catch((err) => {
         console.log("error catched", err);
@@ -71,11 +89,13 @@ function setLike() {
 
 // Comments
 function setComment() {
-  commentinput = document.querySelector(".commentform");
-  commentbutton = document.querySelector(".commentsubmit");
+  let commentinput = document.querySelector(".commentfield");
+  let commentbutton = document.querySelector(".commentsubmit");
+  let commentSection = document.querySelector(".comment-list");
 
-  commentbutton.addEventListener("submit", () => {
-    let comment = commentinput.innerText;
+  commentbutton.addEventListener("click", () => {
+    let comment = commentinput.value;
+    console.log(commentinput);
     fetch(`/${pagetype}/comment/${news_id}/`, {
       headers: {
         "X-CSRFToken": csrftoken,
@@ -85,16 +105,42 @@ function setComment() {
       body: JSON.stringify({ comment: comment }),
     })
       .then((response) => {
+
+        if (response.status == "403") {
+          window.location.href = "/news/login/";
+        }
         return response.json();
       })
 
       .then((data) => {
-        console.log("got data", data);
+        console.log(data.date)
+        let date = new Date(data.date);
+
+        let options = {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+      };
+        let formatted = date.toLocaleString("en-US", options);
+        formatted = formatted.replace("AM","a.m.").replace("PM","p.m.").replace(" at",",");
+
+        commentPart = document.createElement("div");
+        console.log(data)
+        commentPart.innerHTML = `<p>At ${formatted}</p>
+          <p>${data.author} Said</p>
+          <p>${data.commentmessage}</p>
+          `;
+        commentSection.insertBefore(commentPart,commentSection.firstChild);
       })
 
       .catch((err) => {
-        console.log("error occured");
-      });
+        console.log("error occured",err);
+      })
   });
 }
-setLike();
+
+Like();
+setComment();

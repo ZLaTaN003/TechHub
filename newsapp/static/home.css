@@ -1,0 +1,149 @@
+*{
+    font-family: "News Cycle", sans-serif;
+    color: var(--text-color-light);
+
+}
+
+.home-container{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+.featured-news{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto auto;
+    color: var(--text-color-light);
+    margin: 10px;
+    width: 100%;
+
+}
+.featured-news > * {
+    align-self: stretch;
+}
+.featured-product,.featured-news-headline{
+    display: flex;
+    width: 300px;
+    flex-direction: column;
+    margin: 10px;
+    height: 100%;
+    
+
+}
+
+.hyped-products img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.hyped-products{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px;
+}
+
+
+
+.hyped-article{
+    display: flex;
+    gap: 150px;
+    margin: 10px;
+}
+
+.main-news{
+    margin: 10px;
+    outline: solid var(--secondary-color);
+}
+.main-news img{
+    width: 100%;
+    height: 70%;
+}
+.main-news:hover{
+    outline: solid var( --primary-color);
+}
+
+.product-rank-name:hover{
+    color: var(--primary-color);
+}
+
+.hyped-article li:hover{
+    color: var(--primary-color);
+
+}
+
+.newsarticletitle{
+    margin: 10px;
+}
+.features-of-app{
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 50px;
+
+}
+.newsupdate{
+    width: 400px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-color);
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    gap: 3px;
+
+}
+.appidea{
+    width: 400px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-color);
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    gap: 3px;
+
+
+   
+
+
+
+}
+.latestnewsicon,.appideaicon{
+    border: solid var(--secondary-color);
+    color:red;
+   
+
+}
+.latestnewstext,.apptext{
+    font-size: 28px;
+    color: var(--text-color-light);
+}
+.appideaicon i{
+    font-size: 32px;
+}
+.latestnewsicon i{
+    font-size: 32px;
+}
+
+.appidea p,.newsupdate p{
+    margin-left: 10px;
+}
+
+.appidea a, .newsupdate a{
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color); 
+    color: white;
+    text-decoration: none;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.appidea a:hover, .newsupdate a:hover{
+    background-color: var(--bg-color);
+}

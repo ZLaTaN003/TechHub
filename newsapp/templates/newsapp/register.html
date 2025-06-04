@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% block csspart %}
+  <style>
+    .nav {
+      display: none;
+    }
+  </style>
+{% endblock %}
 {% block content %}
   <div class="login-body">
     <div class="login-content">
-      <a class="logo-news" href="{% url 'allnews' %}">
-        <i class="fa-solid fa-layer-group"></i>
-        Newsy
-      </a>
       <form action="" method="POST">
+        <a class="logo-news" href="{% url 'allnews' %}">
+          <i class="fa-solid fa-layer-group"></i>
+          Newsy
+        </a>
         {% csrf_token %}
         {% for field in form %}
-          <div class="fieldWrapper">{{ field.errors }}</div>
+          <div class="fieldWrapper">{{ field }}</div>
+
           {% if field.errors %}
             <span class="login-err">{{ field.errors }}</span>
           {% endif %}

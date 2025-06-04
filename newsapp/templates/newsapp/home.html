@@ -4,11 +4,83 @@
 {% block csspart %}
   <link rel="stylesheet" href="{% static 'home.css' %}" />
 {% endblock %}
+
 {% block content %}
   <section class="home-container">
-    <div class="featured-news"></div>
-    <div class="featured-product"></div>
-
-    <div class="featured-trending-news"></div>
+    <div class="featured-news-headline">
+      <h1>Top Headlines</h1>
+      <hr />
+      <ul>
+        {% for article in hyped_articles %}
+          <a href="{% url 'detailed' article.slug %}">
+            <div class="hyped-article">
+              <li>{{ article.title }}</li>
+            </div>
+          </a>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="featured-news">
+      {% for newsarticle in latest_news %}
+        <div class="main-news">
+          <a href="{% url 'detailed' newsarticle.slug %}">
+            <img src="{{ newsarticle.image_url }}" alt="Imageurl" onerror="this.src='https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';" />
+            <div class="newsarticletitle">{{ newsarticle.title }}</div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="featured-product">
+      <h1>Trending Products</h1>
+      <hr />
+      {% for product in hyped_products %}
+        <a href="{% url 'trending_products' product.slug %}">
+          <div class="hyped-products">
+            <div class="prouct-rank">{{ forloop.counter }}</div>
+            <img src="{{ product.thumbnail }}" alt="image-thumbnail" />
+            <div class="product-rank-name">{{ product.name }}</div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
   </section>
+
+  <section class="features-of-app">
+    <div class="newsupdate">
+      <div class="latestnewsicon">
+        <i class="fa-solid fa-newspaper"></i>
+      </div>
+      <div class="latestnewstext">Stay Updated with Tech News</div>
+      <p>Catch up on the latest headlines in tech and startup culture, curated for makers and developers</p>
+      <a href="{% url 'allnews' %}">Explore News</a>
+    </div>
+    <div class="appidea">
+      <div class="appideaicon">
+        <i class="fa-solid fa-lightbulb"></i>
+      </div>
+      <div class="apptext">Find Your Next App Idea!</div>
+      <p>Browse trending product launches to spark inspiration, and save your favorite ideas</p>
+      <a href="{% url 'trending_list' %}">Browse Products</a>
+    </div>
+  </section>
+  <footer style="display: flex; justify-content: center; font-size: 16px; color:var(--secondary-color); margin-top:50px ;">
+    Built by <a href="https://github.com/ZLaTaN003" style="color: #3b82f6; text-decoration: none;">@ZLaTaN003</a>
+    <a href="mailto:adithyakrishnanxx1@gmail.com" style="margin-left: 400px;">Contact me</a>
+  </footer>
+
+  <script>
+    const menuBtns = document.querySelectorAll('.menu-button')
+    const overlayMenu = document.querySelector('.overlay')
+    const closeBtn = document.querySelector('.close-button')
+    
+    menuBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        overlayMenu.style.display = 'flex'
+      })
+    })
+    
+    closeBtn.addEventListener('click', () => {
+      overlayMenu.style.display = 'none'
+    })
+  </script>
 {% endblock %}

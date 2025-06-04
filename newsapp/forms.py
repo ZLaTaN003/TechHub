@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import ProductComment
+from .models import ProductComment,ArticleComment
 
 class SignUp(forms.Form):
     username = forms.CharField(max_length=200,widget=forms.TextInput(attrs={"label":"","placeholder":"Name"}))
@@ -17,5 +17,14 @@ class ProductCommentForm(ModelForm):
         fields = ["comment"]
     def __init__(self,*args,**kwargs):
         super().__init__(*args,*kwargs)
-        self.fields["comment"].widget.attrs.update({"class":"commentform"})
+        self.fields["comment"].widget.attrs.update({"class":"commentfield"})
+  
+
+class ArticleCommentForm(ModelForm):
+    class Meta:
+        model = ArticleComment
+        fields = ["comment"]
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,*kwargs)
+        self.fields["comment"].widget.attrs.update({"class":"commentfield"})
   

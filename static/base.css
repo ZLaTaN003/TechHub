@@ -16,6 +16,7 @@ body{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
 }
 
 a{
@@ -40,7 +41,7 @@ a{
 
 
 }
-.nav ul li a:hover{
+.nav ul li a:hover,.newsy-name:hover{
     color: var(--primary-color);
 }
 .nav ul li{
@@ -118,7 +119,7 @@ a{
     background-color: var(--primary-color);
 
 }
-.login-err{
+.login-err ul{
     list-style: none;
     color:red;
 }
@@ -128,3 +129,118 @@ a{
 }
 
 
+
+
+.menu-button {
+    background: none;
+    border: none;
+    margin-right: 6px ;
+    font-size: 28px;
+  }
+
+.overlay {
+height: auto;
+width: 100%;
+position: fixed;
+top: 0;
+left: 0;
+background-color: var(--bg-color);
+color: white;
+display: none;
+z-index: 1000;
+justify-content: center;
+flex-direction: column;
+}
+.overlay-text{
+    display: flex;
+    justify-content: space-around;
+    font-family: "News Cycle", sans-serif;
+    margin-top: 10px;
+    align-items: center;
+
+}
+.overlay-content a {
+margin: 10px;
+color: white;
+text-decoration: none;
+font-family: "News Cycle", sans-serif;
+margin-left: 40px;
+
+
+}
+.overlay-content{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+}
+
+.overlay-content a:hover {
+color: var(--primary-color);
+}
+
+
+.overlay-text input{
+    border: none;
+    border-bottom: 2px solid var(--text-color-light);
+    padding: 8px 0;
+    font-size: 16px;
+    background: transparent;
+    outline: none;
+    color: var(--text-color-light);
+
+
+
+}
+.search-btn{
+    background: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    font-size: 14px;
+    color: var(--text-color-light);
+
+}
+.close-button {
+position: absolute;
+top: 1rem;
+right: 1rem;
+font-size: 2rem;
+border: none;
+color: white;
+}
+
+nav *{
+    color: var(--text-color-light);
+}
+
+.user-box{
+    width: 64px;
+    height: 32px;
+    border-radius: 15px;
+    background-color: var(--bg-color);
+    position: relative;
+    text-align: center;
+    color: var(--text-color-light);
+    cursor: pointer;
+
+}
+
+.user-list{
+    display: none;
+    height: auto;
+    background-color: var(--secondary-color);
+    width: 140px;
+    position: absolute;
+    top: 28px;
+    z-index: 1;
+    border: none;
+    flex-direction: column;
+    
+
+}
+
+.user-setting-icon{
+    font-size: 28px;
+
+
+}

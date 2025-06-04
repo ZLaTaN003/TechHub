@@ -6,14 +6,20 @@
 {% endblock %}
 {% block content %}
   <div class="listbody">
-    <div class="trending">
-      <h3>Top 5 News of Today</h3>
-
-      <a href="{% url 'register' %}">HEY</a>
-    </div>
+    <div class="trending"></div>
 
     <section class="latest-articles">
-      <h1 class="latest-news-title">Trending Apps</h1>
+      <h1 class="latest-news-title">
+        {% if type == 'productlist' %}
+          Trending Apss <i class="fa-solid fa-bars menu-button" style="margin-left: 20px;"></i>
+        {% elif type == 'category' %}
+          {{ category }} <i class="fa-solid fa-bars menu-button" style="margin-left: 20px;"></i>
+        {% elif type == 'search' %}
+          Search Results For {{ query }} <i class="fa-solid fa-bars menu-button" style="margin-left: 20px;"></i>
+        {% elif type == 'bookmark' %}
+          Bookmarked Products <i class="fa-solid fa-bars menu-button" style="margin-left: 20px;"></i>
+        {% endif %}
+      </h1>
       <hr />
       {% for article in object %}
         <a href="{% url 'trending_products' article.slug %}" class="article-link">
@@ -34,17 +40,43 @@
           </div>
         </a>
       {% endfor %}
-
-      <div class="page-nums">
-        {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}" class="page-prev pprev"><div class="prev-container">Previous</div></a>
-        {% endif %}
-        {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}" class="page-next pnext">Next</a>
-        {% endif %}
-      </div>
+      {% if type == 'search' %}
+        <div class="page-nums">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&searchTerm={{ query }}" class="page-prev pprev"><div class="prev-container">Previous</div></a>
+          {% endif %}
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&searchTerm={{ query }}" class="page-next pnext">Next</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="page-nums">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-prev pprev"><div class="prev-container">Previous</div></a>
+          {% endif %}
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="page-next pnext">Next</a>
+          {% endif %}
+        </div>
+      {% endif %}
     </section>
 
     <div class="filters"></div>
   </div>
+
+  <script>
+    const menuBtns = document.querySelectorAll('.menu-button')
+    const overlayMenu = document.querySelector('.overlay')
+    const closeBtn = document.querySelector('.close-button')
+    
+    menuBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        overlayMenu.style.display = 'flex'
+      })
+    })
+    
+    closeBtn.addEventListener('click', () => {
+      overlayMenu.style.display = 'none'
+    })
+  </script>
 {% endblock %}

@@ -6,20 +6,17 @@
 {% endblock %}
 {% block content %}
   <div class="listbody">
-    <div class="trending">
-      <h3>Top 5 News of Today</h3>
-
-      <a href="{% url 'register' %}">HEY</a>
-    </div>
+    <div class="trending"></div>
 
     <section class="latest-articles">
       <h1 class="latest-news-title">Latest News</h1>
+
       <hr />
       {% for article in page %}
         <a href="{% url 'detailed' article.slug %}" class="article-link">
           <div class="article">
             <div class="image-container">
-              <img src="{{ article.image_url }}?resize=900,602" alt="article_url" width="200" height="200" />
+              <img src="{{ article.image_url }}?resize=900,602" alt="article_url" width="200" height="200" onerror="this.src='https://images.unsplash.com/photo-1585829365295-ab7cd400c167?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';" />
             </div>
 
             <div class="information">
