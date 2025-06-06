@@ -148,3 +148,39 @@
 }
 
 
+@media (max-width:600px){
+    .trending,.filters{
+        display: none;
+    }
+
+    .latest-articles{
+        width: 100%;
+    }
+
+   
+    .latest-articles *{
+        font-size: 10px;
+        margin: 0;
+    }
+
+     .latest-articles h2{
+        font-size: 14px;
+    }
+    .latest-news-title{
+        font-size: 28px;
+    }
+
+    .image-container{
+        width: auto;
+    }
+
+    .tag{
+        width: 160px;
+    }
+
+    .menu-button{
+        font-size: 28px;
+    }
+
+    
+}

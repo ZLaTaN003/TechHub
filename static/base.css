@@ -216,7 +216,6 @@ nav *{
 .user-box{
     width: 64px;
     height: 32px;
-    border-radius: 15px;
     background-color: var(--bg-color);
     position: relative;
     text-align: center;
@@ -235,6 +234,8 @@ nav *{
     z-index: 1;
     border: none;
     flex-direction: column;
+    border-radius: 15px;
+
     
 
 }
@@ -243,4 +244,43 @@ nav *{
     font-size: 28px;
 
 
+}
+
+@media (max-width:600px){
+    .nav li, .overlay{ 
+        font-size: 12px;
+
+    }
+    .user-list{
+        right: 25px;
+    }
+
+    .user-list *{
+        font-size: 12px;
+    }
+    .search-btn{
+        position: relative;
+        right: 20px;
+    }
+    .close-button{
+        font-size: 20px;
+    }
+
+        .menu-button{
+        font-size: 28px;
+    }
+
+    .login-content{
+        width: 90%;
+    }
+
+}
+
+
+
+
+@media (max-width:1000px){
+    .login-content{
+        width: 80%;
+    }
 }

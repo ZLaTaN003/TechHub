@@ -10,12 +10,23 @@
       <h1>{{ product.name }}</h1>
 
       <div class="short-des">{{ product.description }}</div>
+      <div class="detail-like-container">
+        <div class="article-date">
+          <span>at {{ product.featuredat }}</span>
 
-      <div class="article-date">
-        <span>at {{ product.featuredat }}</span>
+          <a href="{{ product.link }}" class="product-link" style=""><img src="{{ product.thumbnail }}" alt="article_url" width="40" height="40" style="border-radius: 50%; vertical-align: middle; margin-left: 5px;" /></a>
+          <span class="source-link" style="margin-left: 5px;"><a href="https://www.producthunt.com/">Source</a></span>
+        </div>
 
-        <a href="{{ product.link }}" class="product-link" style=""><img src="{{ product.thumbnail }}" alt="article_url" width="40" height="40" style="border-radius: 50%; vertical-align: middle; margin-left: 5px;" /></a>
-        <span class="source-link" style="margin-left: 5px;"><a href="https://www.producthunt.com/">Source</a></span>
+        <div class="likey-section">
+          <div class="like-button" style="color: white; font-size: 50px;" data-news="{{ product.slug }}">
+            <i class="fa-solid fa-bookmark" style="color: var(--text-color-light);"></i>
+          </div>
+          <div class="unset-button" style="color: white; font-size: 50px;" data-news="{{ product.slug }}">
+            <i class="fa-solid fa-bookmark" style="color: var(--primary-color);"></i>
+          </div>
+          <div class="user-liked" data-userliked="{{ user_liked }}"></div>
+        </div>
       </div>
 
       <div class="share-box">
@@ -37,22 +48,20 @@
 
       {% csrf_token %}
 
-      <div class="like-button" style="color: white; font-size: 50px;" data-news="{{ product.slug }}">Liked</div>
-      <div class="unset-button" style="color: white; font-size: 50px;" data-news="{{ product.slug }}">Not Liked</div>
-      <div class="like-count">{{ no_of_likes }}</div>
-      <div class="user-liked" data-userliked="{{ user_liked }}"></div>
-
       <div class="comments">
-        <h1>Comments section</h1>
-        {{ comment_form }}
-        <button type="submit" class="commentsubmit">Comment</button>
-      </div>
-      <div class="comment-list">
-        {% for com in comments %}
-          <p>At {{ com.created_at }}</p>
-          <p>{{ com.user }} Said</p>
-          <p>{{ com.comment }}</p>
-        {% endfor %}
+        <div class="comment-area">
+          {{ comment_form.comment.as_widget }}
+          <button type="submit" class="commentsubmit">Comment</button>
+        </div>
+        <div class="comment-list">
+          {% for com in comments %}
+            <div class="user-comments">
+              <p>At {{ com.created_at }}</p>
+              <p>{{ com.user }} Said</p>
+              <p>{{ com.comment }}</p>
+            </div>
+          {% endfor %}
+        </div>
       </div>
     </section>
   </div>

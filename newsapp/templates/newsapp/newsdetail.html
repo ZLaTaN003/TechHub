@@ -57,16 +57,18 @@
 
       <div class="comments">
         <div class="comment-area">
-          {{ comment_form }} <button type="submit" class="commentsubmit">Comment</button>
+          {{ comment_form.comment.as_widget }}
+          <button type="submit" class="commentsubmit">Comment</button>
         </div>
-      </div>
-
-      <div class="comment-list">
-        {% for com in comments %}
-          <p>At {{ com.created_at }}</p>
-          <p>{{ com.user }} Said</p>
-          <p>{{ com.comment }}</p>
-        {% endfor %}
+        <div class="comment-list">
+          {% for com in comments %}
+            <div class="user-comments">
+              <p>At {{ com.created_at }}</p>
+              <p>{{ com.user }} Said</p>
+              <p>{{ com.comment }}</p>
+            </div>
+          {% endfor %}
+        </div>
       </div>
     </section>
   </div>

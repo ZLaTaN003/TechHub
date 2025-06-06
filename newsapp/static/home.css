@@ -112,6 +112,9 @@
 
 
 }
+.footerr{
+    display: flex;
+}
 .latestnewsicon,.appideaicon{
     border: solid var(--secondary-color);
     color:red;
@@ -146,4 +149,71 @@
 
 .appidea a:hover, .newsupdate a:hover{
     background-color: var(--bg-color);
+}
+
+@media (max-width:600px){
+    *{
+        .featured-news-headline,.featured-product{
+            width: 40px;
+            margin: 0;
+        }
+
+        .featured-news-headline *,.featured-product *,.featured-news *{
+            font-size: 10px;
+            
+
+        }
+        .featured-product{
+            display: none;
+        }
+
+        .featured-news{
+    grid-template-columns: 1fr 1fr;
+
+
+        }
+
+        *{
+            margin: 0;
+        }
+
+        .appidea *,.newsupdate *{
+            font-size: 10px;
+
+        }
+
+        .features-of-app{
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .appidea,.newsupdate{
+                        width: 50%;
+
+        }
+
+        .footerr{
+            display: none;
+        }
+
+        .apptext,.latestnewstext{
+            font-weight: 300;
+            font-size: 15px;
+        }
+
+    }
+
+}
+
+@media (max-width:1000px){
+       .featured-news-headline *,.featured-product *,.featured-news *{
+            font-size: 12px;
+            
+
+        }
+
+        *{
+            margin: 0;
+        }
+    
 }

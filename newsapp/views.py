@@ -24,23 +24,24 @@ from datetime import timedelta
 
 
 def home(request):
-    past_week_date = timezone.now() - timedelta(days=7)
+    """Home Page"""
+    past_week_date = timezone.now() - timedelta(days=7) 
     past_month_date = timezone.now() - timedelta(days=30)
-    hyped_articles = (
-        Article.objects.filter(post_published__gte=past_week_date)
+    hyped_articles = (          #Article which has most likes over past week
+        Article.objects.filter(post_published__gte=past_week_date) 
         .annotate(num_likes=Count("likes"))
-        .order_by("-num_likes").order_by("-post_published", "-published_at")[:10]
+        .order_by("-num_likes", "-post_published", "-published_at")[:10]
     )
-    latest_news_articles = Article.objects.all().order_by(
+    latest_news_articles = Article.objects.all().order_by(  #Main Articles for display
         "-post_published", "-published_at"
     )[:10]
-    hyped_products = Product.objects.filter(featuredat__gt=past_month_date).order_by(
+    hyped_products = Product.objects.filter(featuredat__gt=past_month_date).order_by(  #Products listed on ph having high upvotes
         "-upvotes"
     )[:10]
 
     categories_product = Product.objects.values_list(
         "domain", flat=True
-    ).distinct()  # category to base
+    ).distinct()  # category to base html (for product categories)
 
     return render(
         request,
@@ -115,7 +116,6 @@ def signup(request):
                 return redirect("allnews")
 
             else:
-                print("Not same")
                 form.add_error("password1", "The passwords given does not match")
                 return render(request, "newsapp/register.html", context={"form": form})
 
@@ -135,7 +135,6 @@ def login_view(request):
             password = form.cleaned_data["password"]
 
             user = authenticate(username=username, password=password)
-            print("i am", user)
             if user is not None:
                 login(request, user)
 
@@ -375,13 +374,12 @@ def news_comment(request, news_slug):
 
 def bookmarked(request):
     if not request.user.is_authenticated:
-        redirect("login")
+        return redirect("login")
     username = request.user.username
     products_liked_by_user = NewsUser.objects.get(username=username).product_set.all()
     categories = Product.objects.values_list(
         "domain", flat=True
     ).distinct()  # category to base
-    print(products_liked_by_user)
     paginator = Paginator(products_liked_by_user, 5)
 
     try:

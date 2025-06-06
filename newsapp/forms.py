@@ -17,7 +17,7 @@ class ProductCommentForm(ModelForm):
         fields = ["comment"]
     def __init__(self,*args,**kwargs):
         super().__init__(*args,*kwargs)
-        self.fields["comment"].widget.attrs.update({"class":"commentfield"})
+        self.fields["comment"].widget.attrs.update({"class":"commentfield","placeholder":"Add a Comment"})
   
 
 class ArticleCommentForm(ModelForm):
@@ -26,5 +26,5 @@ class ArticleCommentForm(ModelForm):
         fields = ["comment"]
     def __init__(self,*args,**kwargs):
         super().__init__(*args,*kwargs)
-        self.fields["comment"].widget.attrs.update({"class":"commentfield"})
+        self.fields["comment"].widget.attrs.update({"class":"commentfield","placeholder":"Add a Comment"})
   

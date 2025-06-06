@@ -38,7 +38,6 @@ if (userLiked == "1"){
 if (userLiked == "0"){
   unlike.style.display = "none";
 }
-console.log(userLiked);
 // Like No Reloads
 function Like() {
   news_id = like.getAttribute("data-news");
@@ -49,7 +48,6 @@ function Like() {
 
 function checkEvent(button, mode) {
   button.addEventListener("click", () => {
-    console.log(button, mode);
     fetch(`/${pagetype}/like/${news_id}/`, {
       //requests the server
 
@@ -95,7 +93,6 @@ function setComment() {
 
   commentbutton.addEventListener("click", () => {
     let comment = commentinput.value;
-    console.log(commentinput);
     fetch(`/${pagetype}/comment/${news_id}/`, {
       headers: {
         "X-CSRFToken": csrftoken,
@@ -113,7 +110,6 @@ function setComment() {
       })
 
       .then((data) => {
-        console.log(data.date)
         let date = new Date(data.date);
 
         let options = {
@@ -128,7 +124,7 @@ function setComment() {
         formatted = formatted.replace("AM","a.m.").replace("PM","p.m.").replace(" at",",");
 
         commentPart = document.createElement("div");
-        console.log(data)
+        commentPart.classList.add("user-comments")
         commentPart.innerHTML = `<p>At ${formatted}</p>
           <p>${data.author} Said</p>
           <p>${data.commentmessage}</p>

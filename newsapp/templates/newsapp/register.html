@@ -15,6 +15,7 @@
           <i class="fa-solid fa-layer-group"></i>
           Newsy
         </a>
+        <span style="text-decoration: none; color: var(--text-color-light);">Have a Account? <a href="{% url 'login' %}" style="color: var(--primary-color);">Login</a></span>
         {% csrf_token %}
         {% for field in form %}
           <div class="fieldWrapper">{{ field }}</div>

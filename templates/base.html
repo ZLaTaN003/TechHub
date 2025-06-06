@@ -18,14 +18,14 @@
           <li>
             <i class="fa-solid fa-bars menu-button"></i>
 
-            <a href="{% url 'home' %}"><span class="newsy-name">Newsy</span></a>
+            <a href="{% url 'home' %}"><span class="newsy-name">Tech</span></a>
           </li>
           <li>
             <a href="{% url 'allnews' %}">Latest</a>
           </li>
 
           <li>
-            <a href="{% url 'trending_list' %}">Trending Products</a>
+            <a href="{% url 'trending_list' %}">Products</a>
           </li>
           <li>
             {% if request.user.is_authenticated %}
@@ -38,10 +38,14 @@
                 </div>
               </div>
             {% else %}
-              <i class="fa-solid fa-user"></i>
-              <a href="{% url 'login' %}">Login</a>
-              <a href="{% url 'register' %}">Register</a>
-              <a href="">Bookmarks</a>
+              <div class="user-box">
+                <i class="fa-solid fa-user user-setting-icon"></i>
+                <div class="user-list">
+                  <a href="{% url 'login' %}">Login</a>
+                  <a href="{% url 'register' %}">Register</a>
+                  <a href="{% url 'bookmark' %}">Bookmarks</a>
+                </div>
+              </div>
             {% endif %}
           </li>
         </ul>

@@ -152,3 +152,66 @@
     display: flex;
     justify-content: space-between;
 }
+
+.comments{
+    margin-top: 50px;
+}
+
+.commentfield{
+    background-color: var(--text-color-light);
+    width: 90%;
+    height: 130px;
+    display: flex;
+    outline: none;
+    border: none;
+    resize: none;
+    justify-content: center;
+    padding: 6px 10px;  
+    border-radius: 16px;
+
+}
+
+.commentsubmit{
+    background-color: var(--primary-color);
+    width: auto;
+    margin: 0px;
+    outline: none;
+    border: none;
+    padding: 10px 10px;
+    height: 40px;
+    border-radius: 30px;
+    align-self: flex-end;
+    position: relative;
+    bottom: 50px;
+    right: 120px;
+    color: var(--text-color-light);
+
+
+}
+.commentsubmit:hover{
+    background-color: var(--bg-color);
+}
+.comment-area{
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    
+}
+
+.user-comments {
+    color: var(--text-color-light);
+    margin: 6px;
+    margin-bottom: 20px;
+}
+
+
+@media (max-width:600px){
+    .related-news{
+        display: none;
+    }
+    .detail-article{
+        width: 100%;
+    }
+
+  
+}
