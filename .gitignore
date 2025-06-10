@@ -92,8 +92,6 @@ logs/
 *.iml
 *.idea/
 *.vscode/
-*.sublime-project
-*.sublime-workspace
 
 
 #Dummy

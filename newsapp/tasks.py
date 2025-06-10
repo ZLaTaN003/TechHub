@@ -133,11 +133,11 @@ def products_data():
         }
 
         url = "https://api.producthunt.com/v2/api/graphql"
-        today = datetime.today().date()
+        reqday = datetime.today().date() - timedelta(days=7)
 
         query = f"""
     query Posts {{
-        posts(order: VOTES, first: 20, postedAfter: "{today}") {{
+        posts(order: VOTES, first: 20, postedAfter: "{reqday}") {{
             nodes {{
                 id
                 name

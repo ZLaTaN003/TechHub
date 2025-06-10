@@ -376,7 +376,7 @@ def bookmarked(request):
     if not request.user.is_authenticated:
         return redirect("login")
     username = request.user.username
-    products_liked_by_user = NewsUser.objects.get(username=username).product_set.all()
+    products_liked_by_user = NewsUser.objects.get(username=username).product_set.all().order_by("-featuredat")
     categories = Product.objects.values_list(
         "domain", flat=True
     ).distinct()  # category to base
