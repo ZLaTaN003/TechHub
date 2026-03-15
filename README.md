@@ -22,6 +22,25 @@ Users can browse news, explore Product Hunt launches, like content, and leave co
 
 ---
 
+## Tech Stack
+
+Backend:
+- Django
+- Celery
+- Redis
+
+Frontend:
+- HTML
+- CSS
+- JavaScript
+- Django Templates
+
+Deployment:
+- Azure VPS
+- Gunicorn
+- Nginx
+
+---
 
 ###  Setup Instructions
 
@@ -38,3 +57,5 @@ python manage.py migrate
 python manage.py runserver
 
 ```
+
+
