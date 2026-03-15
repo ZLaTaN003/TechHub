@@ -8,7 +8,7 @@
 ###  Setup Instructions
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/ZLaTaN003/TechHub.git
 cd your-repo-name
 python -m venv venv
 source venv/bin/activate
