@@ -1,4 +1,5 @@
 # Place to Get Tech News and Startup Ideas
+live at: https://techhubnews.centralindia.cloudapp.azure.com/
 
 ## Get the latest tech news and inspiration for your next app!
 
