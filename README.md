@@ -1,6 +1,5 @@
 # TechHub
 
-Live: https://techhubnews.centralindia.cloudapp.azure.com/
 
 TechHub is a Django web application that aggregates tech news and trending startup products.  
 Users can browse news, explore Product Hunt launches, like content, and leave comments.
